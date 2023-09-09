@@ -1,30 +1,52 @@
-const elements = {
-  body: document.querySelector('body'),
-  start: document.querySelector('[data-start]'),
-  stop: document.querySelector('[data-stop]'),
+
+const ref = {
+    start: document.querySelector('button[data-start]'),
+    stop: document.querySelector('button[data-stop]'),
+    body: document.querySelector('body'),
 };
 
-let timerId = null;
-
-elements.start.addEventListener('click', onClickStart);
-elements.stop.addEventListener('click', onClickStop);
-
-function onClickStart() {
-  timerId = setInterval(() => {
-    elements.body.style.backgroundColor = getRandomHexColor();
-  }, 1000);
-  elements.start.disabled = true;
-  elements.stop.disabled = false;
-}
-
-function onClickStop() {
-  clearInterval(timerId);
-  elements.stop.disabled = true;
-  elements.start.disabled = false;
-}
-
 function getRandomHexColor() {
-  return `#${Math.floor(Math.random() * 16777215)
-    .toString(16)
-    .padStart(6, 0)}`;
+    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 }
+
+function ubdateBgc() {
+    ref.body.style.backgroundColor = getRandomHexColor();
+}
+
+class ChangeColor {
+
+    constructor({ updateColor}) {
+        this.timerId = null;
+        this.updateColor = updateColor;
+        this.init()
+    }
+
+    init() {
+        ref.stop.setAttribute('disabled', 'disabled');
+    }
+
+    start() {
+        ref.start.setAttribute('disabled', 'disabled');
+        ref.stop.removeAttribute('disabled');
+
+        this.timerId = setInterval(() => {
+            this.updateColor()
+        }, 1000);
+    }
+
+    stop() {
+        clearInterval(this.timerId);
+        ref.start.removeAttribute('disabled');
+        this.init()
+    }
+};
+
+const changeColor = new ChangeColor({
+    updateColor: ubdateBgc,
+});
+
+ref.start.addEventListener('click', changeColor.start.bind(changeColor));
+ref.stop.addEventListener('click', changeColor.stop.bind(changeColor));
+
+
+
